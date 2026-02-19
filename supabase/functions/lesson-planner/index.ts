@@ -22,39 +22,39 @@ serve(async (req) => {
     }
 
     const syllabiText = syllabi
-      .map((s: { grade: string; content: string }) => `--- Grade/Class: ${s.grade} ---\n${s.content}`)
+      .map((s: { grade: string; subject: string; content: string }) =>
+        `--- ${s.grade} | Subject: ${s.subject} ---\n${s.content}`
+      )
       .join("\n\n");
 
-    const systemPrompt = `You are an expert multigrade classroom lesson planner for rural Indian schools where multiple grades sit together in one classroom.
+    const systemPrompt = `You are an expert multigrade classroom lesson planner for Indian schools where multiple grades sit together in one classroom.
 
 Your task:
-1. Analyze the syllabi from different grades provided by the teacher.
-2. Identify SIMILAR/RELATED topics across grades that can be taught together (e.g., "Plants" in Class 1 and "Photosynthesis" in Class 7 — the basic concept connects to the advanced one).
-3. Identify topics that are COMPLETELY DIFFERENT and cannot be merged.
+1. Analyze the syllabi (with grade and subject) from different grades provided by the teacher.
+2. Identify SIMILAR/RELATED topics across grades that can be taught together.
+   - Example: "Plants" in Class 1 and "Photosynthesis" in Class 7 share a botanical theme.
+   - Even across subjects: "Measurements" in Maths Class 3 and "Units of Measurement" in Science Class 4 can overlap.
+3. Identify topics that are COMPLETELY DIFFERENT and must be taught separately.
 
-For merged topics, create a combined lesson plan that:
-- Teaches the basic concept to lower grades while extending it for higher grades
-- Suggests differentiated activities for each grade level
+For MERGED topics: Create a combined lesson plan with differentiated activities per grade.
+For SEPARATE topics: Suggest what the other grade(s) do as a PARALLEL ACTIVITY (worksheet, group project, revision, independent reading, peer-teaching, etc.) while one grade is being taught.
 
-For non-mergeable topics, suggest:
-- Teaching one grade while the other does an independent activity (worksheet, group project, revision of previous topic, etc.)
-
-Output your response in the following JSON structure (respond ONLY with valid JSON, no markdown):
+Output ONLY valid JSON (no markdown, no code fences):
 {
   "merged_topics": [
     {
       "theme": "Common theme name",
       "grades_involved": [
         { "grade": "Class 1", "chapter": "Chapter name", "topic": "Topic name" },
-        { "grade": "Class 2", "chapter": "Chapter name", "topic": "Topic name" }
+        { "grade": "Class 7", "chapter": "Chapter name", "topic": "Topic name" }
       ],
-      "why_mergeable": "Brief explanation of why these topics can be taught together",
+      "why_mergeable": "Brief explanation of why these can be taught together",
       "lesson_plan": {
-        "duration": "estimated time",
-        "introduction": "How to introduce the common theme",
+        "duration": "estimated time e.g. 45 minutes",
+        "introduction": "How to introduce the common theme to all grades together",
         "activities_by_grade": [
-          { "grade": "Class 1", "activity": "What this grade does" },
-          { "grade": "Class 2", "activity": "What this grade does" }
+          { "grade": "Class 1", "activity": "What this grade does (simpler)" },
+          { "grade": "Class 7", "activity": "What this grade does (advanced)" }
         ],
         "assessment": "How to check understanding for each grade"
       }
@@ -65,13 +65,14 @@ Output your response in the following JSON structure (respond ONLY with valid JS
       "grade": "Class X",
       "chapter": "Chapter name",
       "topic": "Topic name",
-      "suggestion": "When to teach this and what the other grade(s) can do meanwhile"
+      "suggestion": "When and how to teach this topic",
+      "parallel_activity": "What the OTHER grade(s) do meanwhile (specific activity, not vague)"
     }
   ],
   "weekly_schedule": [
     {
       "day": "Day 1",
-      "slot": "Slot description",
+      "slot": "Slot description (e.g. Period 1, Morning Session)",
       "type": "merged | separate",
       "details": "What happens in this slot"
     }
@@ -89,7 +90,10 @@ Output your response in the following JSON structure (respond ONLY with valid JS
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Here are the syllabi for the multigrade classroom:\n\n${syllabiText}\n\nPlease analyze and create a merged lesson plan.` },
+          {
+            role: "user",
+            content: `Here are the syllabi for the multigrade classroom:\n\n${syllabiText}\n\nPlease analyze and create a merged + separate lesson plan with parallel activities.`,
+          },
         ],
       }),
     });
@@ -115,13 +119,11 @@ Output your response in the following JSON structure (respond ONLY with valid JS
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
 
-    // Try to parse as JSON, clean if needed
     let parsed;
     try {
       const jsonStr = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       parsed = JSON.parse(jsonStr);
     } catch {
-      // If AI didn't return valid JSON, return raw content
       parsed = { raw_response: content };
     }
 
