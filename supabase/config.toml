@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.visual-aid-design]
 verify_jwt = false
+
+[functions.quiz-generator]
+verify_jwt = false
