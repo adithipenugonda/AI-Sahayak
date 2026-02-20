@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.quiz-generator]
 verify_jwt = false
+
+[functions.worksheet-generator]
+verify_jwt = false
