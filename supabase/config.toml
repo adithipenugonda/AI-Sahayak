@@ -2,3 +2,6 @@ project_id = "vcbyxscfoitmcjrjtjtd"
 
 [functions.lesson-planner]
 verify_jwt = false
+
+[functions.visual-aid-design]
+verify_jwt = false
