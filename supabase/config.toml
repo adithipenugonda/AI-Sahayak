@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.worksheet-generator]
 verify_jwt = false
+
+[functions.question-paper]
+verify_jwt = false
