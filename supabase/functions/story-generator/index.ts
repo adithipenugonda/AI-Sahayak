@@ -9,12 +9,14 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { className, subjectIntegration, length, language } = await req.json();
+    const { className, topic, subjectIntegration, length, language } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const lengthGuide = length === "Short" ? "about 150 words total" : length === "Long" ? "about 500 words total" : "about 300 words total";
     const bilingualInstruction = language ? `\n\nAFTER the full English story, provide a complete bilingual version:\n- Write each scene again in ${language} (native script) side by side with English.\n- Keep the ${language} version simple and easy to read.` : "";
+
+    const topicInstruction = topic ? `\n- Topic to teach through the story: "${topic}" — The story MUST revolve around teaching this topic. Weave the concept naturally into the plot so students learn it through the narrative.` : "";
 
     const prompt = `You are a creative storyteller for rural Indian school children.
 
@@ -22,7 +24,7 @@ Generate an educational story with these parameters:
 - Class: ${className}
 - Subject Integration: ${subjectIntegration || "General / Moral"}
 - Setting: Rural Indian village
-- Length: ${length} (${lengthGuide})
+- Length: ${length} (${lengthGuide})${topicInstruction}
 ${language ? `- Local Language: ${language}` : ""}
 
 Follow this EXACT structure using these markdown headers:
