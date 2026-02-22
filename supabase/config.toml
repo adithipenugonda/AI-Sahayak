@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.question-paper]
 verify_jwt = false
+
+[functions.knowledge-base]
+verify_jwt = false
