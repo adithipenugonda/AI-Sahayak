@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.knowledge-base]
 verify_jwt = false
+
+[functions.story-generator]
+verify_jwt = false
