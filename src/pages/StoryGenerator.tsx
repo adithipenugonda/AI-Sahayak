@@ -17,6 +17,7 @@ const languages = ['', 'Telugu', 'Hindi', 'Tamil', 'Kannada', 'Malayalam', 'Mara
 export default function StoryGenerator() {
   const { toast } = useToast();
   const [className, setClassName] = useState('');
+  const [topic, setTopic] = useState('');
   const [subjectIntegration, setSubjectIntegration] = useState('');
   const [length, setLength] = useState('Medium');
   const [language, setLanguage] = useState('');
@@ -34,7 +35,7 @@ export default function StoryGenerator() {
     setImages([]);
     try {
       const { data, error } = await supabase.functions.invoke('story-generator', {
-        body: { className, subjectIntegration, length, language },
+        body: { className, topic, subjectIntegration, length, language },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -183,6 +184,10 @@ export default function StoryGenerator() {
                     {classes.map(c => <SelectItem key={c} value={c}>Class {c}</SelectItem>)}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Topic (optional)</Label>
+                <Input placeholder="e.g., Photosynthesis, Fractions, Water Cycle" value={topic} onChange={e => setTopic(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label>Subject Integration (optional)</Label>
