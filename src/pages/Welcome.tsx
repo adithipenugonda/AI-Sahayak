@@ -23,10 +23,7 @@ export default function Welcome() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <Link to="/auth">
-            <Button variant="outline" size="sm">Log In</Button>
-          </Link>
-          <Link to="/auth?tab=signup">
-            <Button size="sm" className="btn-primary-gradient">Sign Up</Button>
+            <Button size="sm" className="btn-primary-gradient">Sign In with Google</Button>
           </Link>
         </div>
       </header>
@@ -44,13 +41,10 @@ export default function Welcome() {
             AI Sahayak helps teachers manage students, generate lesson plans, create quizzes, and build engaging stories — all powered by AI.
           </p>
           <div className="flex gap-3 justify-center pt-2">
-            <Link to="/auth?tab=signup">
+            <Link to="/auth">
               <Button size="lg" className="btn-primary-gradient gap-2">
                 Get Started <ArrowRight className="h-4 w-4" />
               </Button>
-            </Link>
-            <Link to="/auth">
-              <Button size="lg" variant="outline">Log In</Button>
             </Link>
           </div>
         </div>
